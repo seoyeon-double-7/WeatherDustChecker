@@ -19,8 +19,11 @@ class MainActivity : AppCompatActivity() {
 //      temperature 값(Double) 전달할 수 있도록 해주기
 //      해당 값은 모두 프래그먼트 번들 객체에 저장되어야함
 
-        transaction.add(R.id.fragment_container,
-            WeatherPageFragment.newInstance(37.58, 126.98))
+//        transaction.add(R.id.fragment_container,
+//            WeatherPageFragment.newInstance(37.58, 126.98)) //위도 경도
+//
+
+        transaction.add(R.id.fragment_container, DustTestFragment.newInstance(37.58, 126.98))
             //instance는 생성 후 쓰는 것!
 
         transaction.commit()
