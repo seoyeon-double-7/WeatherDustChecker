@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import wikibook.learnandroid.weatherdustchecker.APICall
+import java.net.URL
 
 @JsonDeserialize(using = MyDust::class)
 
@@ -76,10 +77,20 @@ class DustTestFragment : Fragment(){
         val lat = arguments?.getDouble("lat")
         val lon = arguments?.getDouble("lon")
 
-        val url = "https://api.openweathermap.org/data/2.5/weather?units=metric&appid=${APP_ID}&lat=${lat}&lon=${lon}"
-
+        val url = "https://api.waqi.info/feed/geo:${lat};${lon}/?token=${APP_ID}"
         APICall(object : APICall.APICallback{
             override fun onComplete(result: String) {
+                fun asd(dust_num : Double): String {
+                    if(dust_num >=0 && dust_num <=100){
+                        return "좋음"
+                    }else if(dust_num >=101 && dust_num <=200){
+                        return "보통"
+                    }
+                    else {
+                        return "나쁨"
+                    }
+
+                }
                 Log.d("mytag", result)
 
                 var mapper = jacksonObjectMapper()
@@ -87,12 +98,27 @@ class DustTestFragment : Fragment(){
                 small_dust.text = data.pm25.toString()
                 dust.text = data.pm10.toString()
 
+                val small_num_statement = view.findViewById<TextView>(R.id.small_dust)
+                val dust_statement = view.findViewById<TextView>(R.id.dust)
+                small_num_statement.text = "${asd(data.pm25)}(초미세먼지)"
+                dust_statement.text = "${asd(data.pm10)}(초미세먼지)"
+
+                if(asd(data.pm25) == "좋음"){
+                    dustImage.setImageResource(R.drawable.good)
+                } else if(asd(data.pm25) == "보통"){
+                    dustImage.setImageResource(R.drawable.normal)
+                } else if(asd(data.pm25) == "나쁨"){
+                    dustImage.setImageResource(R.drawable.bad)
+                }
+
             }
 
-        })
+        }).execute(URL(url))
 
 
     }
+
+
 
     companion object{
         fun newInstance(lat: Double, lon: Double)
@@ -107,6 +133,7 @@ class DustTestFragment : Fragment(){
                 return fragment
             }
     }
+
 
 
 }
